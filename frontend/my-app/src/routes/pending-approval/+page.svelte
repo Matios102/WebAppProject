@@ -1,0 +1,1 @@
+<h1>You are not approved wait for an admin to approve your account</h1>

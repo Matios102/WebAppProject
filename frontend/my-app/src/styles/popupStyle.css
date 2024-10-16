@@ -1,0 +1,115 @@
+.popup {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+
+h2 {
+    color: #d32f2f;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+
+.actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.green-btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+.green-btn:hover {
+    background-color: #43a047;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.red-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.red-btn:hover {
+    background-color: #e53935;
+    box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
+}
+
+.cancel-btn {
+    background-color: #ddd;
+    color: #555;
+}
+
+.cancel-btn:hover {
+    background-color: #bbb;
+    box-shadow: 0 4px 10px rgba(189, 195, 199, 0.3);
+}
+
+.yellow-btn {
+    background-color: #ffeb3b;
+    color: #333;
+}
+
+.yellow-btn:hover {
+    background-color: #c7ab2a;
+    box-shadow: 0 4px 10px rgba(255, 235, 59, 0.3);
+}
+
+.details {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.popup input[type="text"],
+.popup input[type="email"]
+{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.popup input[type="text"]:focus,
+.popup input[type="email"]:focus {
+    border-color: #d32f2f;
+    outline: none;
+}
