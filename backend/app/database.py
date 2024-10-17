@@ -1,8 +1,7 @@
 from sqlalchemy import create_engine, text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import OperationalError
-from core.config import settings
+from app.core.config import settings
 
 DATABASE = settings.DATABASE_URL
 

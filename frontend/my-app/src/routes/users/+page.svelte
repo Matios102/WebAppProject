@@ -87,7 +87,7 @@
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/users/?${queryParams}`,
+        `http://localhost:8000/api/users?${queryParams}`,
         {
           method: "GET",
           headers: {

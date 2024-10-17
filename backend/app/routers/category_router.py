@@ -1,10 +1,10 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from database import get_db
-from utils.security import get_current_user
-from models import User
-import repositories.category_repository as repo
+from app.database import get_db
+from app.utils.security import get_current_user
+from app.models import User
+import app.repositories.category_repository as repo
 
 router = APIRouter()
 

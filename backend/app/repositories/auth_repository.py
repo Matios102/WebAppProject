@@ -1,10 +1,10 @@
 from typing import Optional
 from sqlalchemy.orm import Session
-from schemas.user_schema import Token, UserRegister
-from utils.security import get_hashed_password, verify_password
-from utils.jwt_handler import create_access_token, decode_access_token
-from repositories.user_repository import get_user_by_email
-from models import User
+from app.schemas.user_schema import Token, UserRegister
+from app.utils.security import get_hashed_password, verify_password
+from app.utils.jwt_handler import create_access_token, decode_access_token
+from app.repositories.user_repository import get_user_by_email
+from app.models import User
 import random
 import string
 

@@ -5,11 +5,13 @@ export async function checkToken() {
     }
     
     try {
-        const response = await fetch(`http://localhost:8000/check-token?token=${encodeURIComponent(token)}`, {
+        const response = await fetch(`http://localhost:8000/check-token`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ token: token }),
         });
 
         if (response.ok) {
@@ -23,7 +25,8 @@ export async function checkToken() {
             return { isValid: false, error: 'Invalid token' }; 
         } else {
             const errorMessage = 'An error occurred, please try again later'; 
-            console.log(errorMessage);
+            const errorDar = await response.json();
+            console.log(errorDar);
             return { isValid: false, error: errorMessage }; 
         }
     } catch (error) {

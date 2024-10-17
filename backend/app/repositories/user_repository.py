@@ -1,10 +1,10 @@
-from models import Team, User
+from app.models import Team, User
 from sqlalchemy.orm import Session
-from schemas.user_schema import UserBase
+from app.schemas.user_schema import UserBase
 
 
 def get_user_by_email(db: Session, email: str) -> UserBase:
-    return db.query(User).filter(User.email == email).first() 
+    return db.query(User).filter(User.email == email).first()    
 
 
 def get_user_by_id(db: Session, user_id: int) -> User:

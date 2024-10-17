@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from models import Category, Expense, User
-from schemas.expense_schema import (
+from app.models import Category, Expense, User
+from app.schemas.expense_schema import (
     ExpenseList,
     ExpenseUpdate,
     ExpenseView,

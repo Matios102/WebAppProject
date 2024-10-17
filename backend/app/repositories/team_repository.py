@@ -1,15 +1,12 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from models import Category, Expense, Team, User
-from schemas.expense_schema import ExpenseList
-from schemas.user_schema import UserDisplay
-
+from app.models import Category, Expense, Team, User
+from app.schemas.user_schema import UserDisplay
 
 def get_team(db: Session, current_user: User) -> list[UserDisplay]:
     if current_user.role != "manager":
         raise PermissionError("You are not a manager")
     return db.query(User).filter(User.team_id == current_user.team_id).all()
-
 
 def create_team(db: Session, team_name: str, current_user: User):
     if current_user.role != "admin":
@@ -18,7 +15,6 @@ def create_team(db: Session, team_name: str, current_user: User):
     db.add(team)
     db.commit()
     db.refresh(team)
-
 
 def get_all_teams(db: Session, current_user: User) -> list[dict]:
     if current_user.role != "admin":
@@ -59,7 +55,6 @@ def get_all_teams(db: Session, current_user: User) -> list[dict]:
 
     return result
 
-
 def delete_team(db: Session, team_id: int, current_user: User):
     if current_user.role != "admin":
         raise PermissionError("You are not an admin")
@@ -73,7 +68,6 @@ def delete_team(db: Session, team_id: int, current_user: User):
 
     db.delete(team)
     db.commit()
-
 
 def add_team_member(db: Session, user_id: int, team_id: int, current_user: User):
     if current_user.role != "admin":
@@ -96,7 +90,6 @@ def add_team_member(db: Session, user_id: int, team_id: int, current_user: User)
     db.commit()
     db.refresh(user)
 
-
 def delete_team_member(db: Session, user_id: int, team_id: int, current_user: User):
     if current_user.role != "admin":
         raise PermissionError("You are not an admin")
@@ -114,7 +107,6 @@ def delete_team_member(db: Session, user_id: int, team_id: int, current_user: Us
     user.team_id = None
     db.commit()
     db.refresh(user)
-
 
 def get_team_expenses(db: Session, current_user: User) -> dict:
     if current_user.role != "manager":
@@ -153,7 +145,6 @@ def get_team_expenses(db: Session, current_user: User) -> dict:
 
     return team_expenses
 
-
 def get_team_expenses_by_category(db: Session, current_user: User) -> dict:
     if current_user.role != "manager":
         raise PermissionError("You are not a manager")
@@ -168,7 +159,6 @@ def get_team_expenses_by_category(db: Session, current_user: User) -> dict:
     )
 
     return {category: total_amount for category, total_amount in expenses}
-
 
 def get_users_without_team(
     db: Session, current_user: User, name_or_surname: str

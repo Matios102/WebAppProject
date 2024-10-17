@@ -2,11 +2,11 @@ from datetime import date
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from database import get_db
-from models import User
-from utils.security import get_current_user
-import repositories.expenses_repository as repo
-from schemas.expense_schema import ExpenseCreate, ExpenseUpdate
+from app.database import get_db
+from app.models import User
+from app.utils.security import get_current_user
+import app.repositories.expenses_repository as repo
+from app.schemas.expense_schema import ExpenseCreate, ExpenseUpdate
 
 
 router = APIRouter()

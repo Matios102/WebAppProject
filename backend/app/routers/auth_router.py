@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from database import get_db
+from app.database import get_db
 from sqlalchemy.orm import Session
-from models import User
-from schemas.user_schema import UserRegister, Token
-from repositories.user_repository import get_user_by_email
-import repositories.auth_repository as repo
+from app.schemas.user_schema import UserRegister, Token, TokenRequest
+from app.repositories.user_repository import get_user_by_email
+import app.repositories.auth_repository as repo
 
 router = APIRouter()
 
@@ -42,8 +41,8 @@ def reset_password(email: str, db: Session = Depends(get_db)):
 
 # Check if a token is valid
 @router.post("/check-token")
-def check_token(token: str, db: Session = Depends(get_db)):
-    payload = repo.decode_access_token(token)
+def check_token(token: TokenRequest, db: Session = Depends(get_db)):
+    payload = repo.decode_access_token(token.token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
     is_approved = repo.check_user_approval(db, payload["sub"])

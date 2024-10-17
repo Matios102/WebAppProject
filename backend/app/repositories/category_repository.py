@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Category, Expense, User
+from app.models import Category, Expense, User
 
 
 def get_categories_for_admin(

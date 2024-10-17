@@ -130,13 +130,14 @@
         isProcessing = true;
         try {
             const response = await fetch(
-                `http://localhost:8000/api/team?user_id=${selectedUser.id}&team_id=${selectedTeam.team.id}`,
+                `http://localhost:8000/api/team`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
                     },
+                    body: JSON.stringify({ user_id: selectedUser.id, team_id: selectedTeam.team.id }),
                 },
             );
 
@@ -214,7 +215,7 @@
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
                 },
-                body: JSON.stringify({ name: teamName }),
+                body: JSON.stringify({ team_name: teamName }),
             });
 
             if (!response.ok) {

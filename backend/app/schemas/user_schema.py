@@ -23,8 +23,15 @@ class Token(BaseModel):
     token_type: str
     role: str
 
+class TokenRequest(BaseModel):
+    token: str
+
 class UserDisplay(BaseModel):
     id: int
     name: str
     surname: str
     email: EmailStr
+
+class UserTeamAdd(BaseModel):
+    user_id: int
+    team_id: int

@@ -1,16 +1,16 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from database import get_db
-from models import User
-import repositories.user_repository as repo
-from schemas.user_schema import UserBase
-from utils.security import get_current_user
+from app.database import get_db
+from app.models import User
+import app.repositories.user_repository as repo
+from app.schemas.user_schema import UserBase
+from app.utils.security import get_current_user
 
-router = APIRouter()
+router = APIRouter()  
 
 # Get filtered users based on: status, role, full name, email
-@router.get("/users/", response_model=list[UserBase])
+@router.get("/users", response_model=list[UserBase])
 def get_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

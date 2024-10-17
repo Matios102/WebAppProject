@@ -1,4 +1,4 @@
-from database import Base
+from app.database import Base
 from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String, Date
 
 class User(Base):
