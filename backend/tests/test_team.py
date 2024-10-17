@@ -1,7 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, patch
-from app.database import get_db
 from app.main import app
 from app.repositories.auth_repository import create_access_token
 from app.models import User, Team
@@ -225,12 +224,12 @@ def test_add_team_member_as_admin(valid_admin_token, admin_user, team, database_
 
     app.dependency_overrides = {}
 
-def test_add_team_member_as_non_admin(valid_user_token, test_user, team, database_user, mock_db_session):
+# Test the "add team member" endpoint for non-admin
+def test_add_team_member_as_non_admin(valid_user_token, test_user, team, database_user):
     def mock_get_current_user():
         return test_user
 
     app.dependency_overrides[get_current_user] = mock_get_current_user
-    app.dependency_overrides[get_db] =  mock_db_session  # Mock the db dependency
 
     response = client.post(
         "/api/team",
@@ -241,13 +240,13 @@ def test_add_team_member_as_non_admin(valid_user_token, test_user, team, databas
 
     app.dependency_overrides = {}
 
-def test_add_manager_to_team_with_manager(valid_manager_token, admin_user, team_with_manager, second_manager_user, mock_db_session):
+def test_add_manager_to_team_with_manager(valid_manager_token, admin_user, team_with_manager, second_manager_user):
     def mock_get_current_user():
         return admin_user
 
     app.dependency_overrides[get_current_user] = mock_get_current_user
-    app.dependency_overrides[get_db] = lambda: mock_db_session  # Mock the db dependency
 
+    print(team_with_manager.id)
     response = client.post(
         "/api/team",
         json={"user_id": second_manager_user.id, "team_id": team_with_manager.id},
@@ -257,5 +256,4 @@ def test_add_manager_to_team_with_manager(valid_manager_token, admin_user, team_
     assert response.json() == {"detail": "Team already has a manager"}
 
     app.dependency_overrides = {}
-
 
