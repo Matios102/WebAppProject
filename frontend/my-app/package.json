@@ -16,7 +16,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sveltejs/adapter-node": "^5.2.8",
 		"chart.js": "^4.4.5",
+		"chartjs-plugin-datalabels": "^2.2.0",
 		"d3-array": "^3.2.4",
 		"d3-scale": "^4.0.2",
 		"file-saver": "^2.0.5",

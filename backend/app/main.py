@@ -1,15 +1,26 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
+from app.database import engine, Base, get_db
 from app.routers import expenses_router, auth_router, user_router, team_router, category_router
+from app.utils.init import user_dump, initial_users, category_dump, team_dump
 
 app = FastAPI()
 if engine is not None:
     Base.metadata.create_all(bind=engine)
 
+db = next(get_db())
+category_dump(db)
+initial_users(db)
+user_dump(db)
+team_dump(db)
+
+
 origins = [
     "http://localhost:5173",  
-    "http://127.0.0.1:5173",  
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://0.0.0.0:3000",
     
 ]
 

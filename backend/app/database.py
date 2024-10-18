@@ -10,6 +10,7 @@ SessionLocal = None
 Base = declarative_base()
 
 try:
+    print("Connecting to the database...", DATABASE)
     engine = create_engine(DATABASE)
     SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 

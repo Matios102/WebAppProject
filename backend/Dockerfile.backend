@@ -1,5 +1,4 @@
 # Dockerfile.backend
-
 FROM python:3.12
 
 WORKDIR /app
@@ -17,6 +16,4 @@ ENV DATABASE_URL=postgresql://user:password@postgres:5432/dough
 ENV SECRET_KEY=eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTcyMjQxNjYwNCwiaWF0IjoxNzIyNDE2NjA0fQ.LFN2LQDN_LMlRcFulnNhdP97iX9WOKLlK9sk0f3vlz8
 ENV ALGORITHM=HS256
 
-EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app"]

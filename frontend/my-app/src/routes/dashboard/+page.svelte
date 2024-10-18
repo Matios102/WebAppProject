@@ -5,9 +5,10 @@
     import { showNotification } from '$lib/stores/popupStore.js';
     import { Radar, Line } from 'svelte-chartjs';
     import { Chart, RadialLinearScale, PointElement, LineElement, Filler, CategoryScale, LinearScale } from 'chart.js';
+    import ChartDataLabels from 'chartjs-plugin-datalabels';
   
 
-    Chart.register(RadialLinearScale, PointElement, LineElement, Filler, CategoryScale, LinearScale);
+    Chart.register(RadialLinearScale, PointElement, LineElement, Filler, CategoryScale, LinearScale, ChartDataLabels);
 
     let isValid = false;
     let errorMessage = '';
@@ -110,7 +111,6 @@
             } else {
                 const data = await response.json();
                 lineData.datasets[0].data = Object.values(data.current_year);;
-                lineData.datasets[1].data = Object.values(data.last_year);;
             }
 
         } catch (error) {
@@ -162,17 +162,9 @@
     ],
     datasets: [
       {
-        label: 'Sales',
+        label: 'Current Year',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 2,
-        fill: true,
-        data: []
-      },
-      {
-        label: 'Expenses',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
         borderWidth: 2,
         fill: true,
         data: []
@@ -184,31 +176,34 @@
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top',
-      },
-      datalabels: {
-        display: true,
-        color: 'black',
-        align: 'top',
-        anchor: 'end',
-        font: {
-          weight: 'bold'
+        legend: {
+            display: true, 
+            position: 'top',
+            labels: {
+                usePointStyle: true,
+                pointStyle: 'circle',
+                padding: 20,
+                font: {
+                    size: 14, 
+                    family: "'Arial', sans-serif" 
+                }
+            }
         }
-      }
     },
     scales: {
-      y: {
-        beginAtZero: true,
-        display: true, 
-      },
-      x: {
-        ticks: {
-          display: true,
+        y: {
+            beginAtZero: true,
+            display: true,
+        },
+        x: {
+            ticks: {
+                display: true,
+            }
         }
-      }
     },
-  };
+};
+
+
 
   let  radarData = {
     labels: [],

@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 from app.models import Category, Expense, User
 
+def get_category_by_name(db: Session, category_name: str) -> Category:
+    return db.query(Category).filter(Category.name == category_name).first()
+
 
 def get_categories_for_admin(
     db: Session, current_user: User, ascending: bool, name: str
