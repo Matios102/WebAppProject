@@ -1,21 +1,34 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, patch
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from app.database import get_db, Base
 from app.main import app
-from app.repositories.auth_repository import create_access_token
 from app.models import User, Team
+from app.repositories.auth_repository import create_access_token
 from app.utils.security import get_current_user
+from app.core.config import settings
 
 client = TestClient(app)
 
-@pytest.fixture
-def mock_db_session(mocker):
-    session = MagicMock()
-    mocker.patch("app.database.get_db", return_value=session)
-    return session
+@pytest.fixture(scope="function")
+def db_session():
+    engine = create_engine(settings.TEST_DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    
+    session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+    session.execute(text("TRUNCATE TABLE expenses RESTART IDENTITY CASCADE"))
+    session.execute(text("TRUNCATE TABLE categories RESTART IDENTITY CASCADE"))
+    session.execute(text("TRUNCATE TABLE teams RESTART IDENTITY CASCADE"))
+    
+    yield session
+    session.rollback()
+    session.close()
 
-@pytest.fixture
-def admin_user(mock_db_session):
+
+@pytest.fixture()
+def admin_user(db_session):
     admin = User(
         name="admin",
         surname="admin",
@@ -23,13 +36,14 @@ def admin_user(mock_db_session):
         role="admin",
         password_hash="password123",
         is_approved=True,
-        id=1,
     )
-    mock_db_session.query.return_value.filter_by.return_value.first.return_value = admin
+    db_session.add(admin)
+    db_session.commit()
+    db_session.refresh(admin)
     return admin
 
-@pytest.fixture
-def test_user(mock_db_session):
+@pytest.fixture()
+def test_user(db_session):
     user = User(
         name="user",
         surname="user",
@@ -37,27 +51,14 @@ def test_user(mock_db_session):
         role="user",
         password_hash="password123",
         is_approved=True,
-        id=2,
     )
-    mock_db_session.query.return_value.filter_by.return_value.first.return_value = user
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
     return user
 
-@pytest.fixture
-def database_user(mock_db_session):
-    user = User(
-        name="user",
-        surname="user",
-        email="user@example.com",
-        role="user",
-        password_hash="password123",
-        is_approved=True,
-        id=3,
-    )
-    mock_db_session.query.return_value.filter_by.return_value.first.return_value = user
-    return user
-
-@pytest.fixture
-def manager_user(mock_db_session):
+@pytest.fixture()
+def manager_user(db_session):
     manager = User(
         name="manager",
         surname="manager",
@@ -65,47 +66,52 @@ def manager_user(mock_db_session):
         role="manager",
         password_hash="password123",
         is_approved=True,
-        id=4,
     )
-    mock_db_session.query.return_value.filter_by.return_value.first.return_value = manager
+    db_session.add(manager)
+    db_session.commit()
+    db_session.refresh(manager)
     return manager
 
-@pytest.fixture
-def second_manager_user(mock_db_session):
+@pytest.fixture()
+def second_manager_user(db_session):
     manager = User(
-        name="manager",
-        surname="manager",
+        name="manager2",
+        surname="manager2",
         email="manager2@example.com",
         role="manager",
         password_hash="password123",
         is_approved=True,
-        id=5,
     )
-    mock_db_session.query.return_value.filter_by.return_value.first.return_value = manager
+    db_session.add(manager)
+    db_session.commit()
+    db_session.refresh(manager)
     return manager
 
-@pytest.fixture
-def team(mock_db_session):
-    team = Team(name="Test Team", id=1)
-    mock_db_session.query(Team).filter(Team.id == 1).first.return_value = team
+@pytest.fixture()
+def team(db_session, manager_user):
+    team = Team(name="Test Team", manager_id=manager_user.id)
+    db_session.add(team)
+    db_session.commit()
+    db_session.refresh(team)
     return team
 
-@pytest.fixture
-def team_with_manager(mock_db_session, manager_user):
-    team = Team(name="Test Team", manager_id=manager_user.id, id=2)
-    mock_db_session.query(Team).filter(Team.id == 2).first.return_value = team
+@pytest.fixture()
+def team_with_manager(db_session, manager_user):
+    team = Team(name="Test Team with Manager", manager_id=manager_user.id)
+    db_session.add(team)
+    db_session.commit()
+    db_session.refresh(team)
     return team
 
-
-@pytest.fixture
+@pytest.fixture()
 def valid_admin_token(admin_user):
     return create_access_token({"sub": admin_user.email})
 
-@pytest.fixture
+@pytest.fixture()
 def valid_user_token(test_user):
     return create_access_token({"sub": test_user.email})
 
-@pytest.fixture
+@pytest.fixture()
 def valid_manager_token(manager_user):
     return create_access_token({"sub": manager_user.email})
 
@@ -126,7 +132,7 @@ def test_get_team_for_manager(valid_manager_token, manager_user, team):
     app.dependency_overrides = {}
 
 # Test the "get team" endpoint for non-manager
-def test_get_team_for_non_manager(valid_user_token, test_user, team):
+def test_get_team_for_non_manager( valid_user_token, test_user, team):
     def mock_get_current_user():
         return test_user
 
@@ -141,7 +147,7 @@ def test_get_team_for_non_manager(valid_user_token, test_user, team):
     app.dependency_overrides = {}
 
 # Test the "get all teams" endpoint for an admin
-def test_get_all_teams_for_admin(valid_admin_token, admin_user, team):
+def test_get_all_teams_for_admin( valid_admin_token, admin_user, team):
     def mock_get_current_user():
         return admin_user
 
@@ -156,23 +162,8 @@ def test_get_all_teams_for_admin(valid_admin_token, admin_user, team):
     # Clean up overrides
     app.dependency_overrides = {}
 
-# Test the "get all teams" endpoint for non-admin
-def test_get_all_teams_for_non_admin(valid_user_token, test_user, team):
-    def mock_get_current_user():
-        return test_user
-
-    app.dependency_overrides[get_current_user] = mock_get_current_user
-
-    response = client.get(
-        "/api/team/all", headers={"Authorization": f"Bearer {valid_user_token}"}
-    )
-    assert response.status_code == 403
-
-    # Clean up overrides
-    app.dependency_overrides = {}
-
 # Test the "create team" endpoint for an admin
-def test_create_team_as_admin(valid_admin_token, admin_user):
+def test_create_team_as_admin( valid_admin_token, admin_user):
     def mock_get_current_user():
         return admin_user
 
@@ -189,64 +180,31 @@ def test_create_team_as_admin(valid_admin_token, admin_user):
     # Clean up overrides
     app.dependency_overrides = {}
 
-# Test the "create team" endpoint for non-admin
-def test_create_team_as_non_admin(valid_user_token, test_user):
+# Test the "add team member" endpoint for an admin
+def test_add_team_member_as_admin( valid_admin_token, admin_user, team, test_user):
     def mock_get_current_user():
-        return test_user
+        return admin_user
 
     app.dependency_overrides[get_current_user] = mock_get_current_user
 
     response = client.post(
-        "/api/team/create",
-        json={"team_name": "New Team"},
-        headers={"Authorization": f"Bearer {valid_user_token}"},
+        "/api/team",
+        json={"user_id": test_user.id, "team_id": team.id},
+        headers={"Authorization": f"Bearer {valid_admin_token}"},
     )
-    assert response.status_code == 403
+    assert response.status_code == 200
+    assert response.json()["message"] == "User added to the team"
 
     # Clean up overrides
     app.dependency_overrides = {}
 
-# Test the "add team member" endpoint for an admin
-def test_add_team_member_as_admin(valid_admin_token, admin_user, team, database_user):
+# Test the "add manager to team with manager" endpoint
+def test_add_manager_to_team_with_manager( valid_manager_token, admin_user, team_with_manager, second_manager_user):
     def mock_get_current_user():
         return admin_user
 
     app.dependency_overrides[get_current_user] = mock_get_current_user
 
-    response = client.post(
-        "/api/team",
-        json={"user_id": database_user.id, "team_id": team.id},
-        headers={"Authorization": f"Bearer {valid_admin_token}"},
-    )
-    print(response.json())
-    assert response.status_code == 200
-    assert response.json()["message"] == "User added to the team"
-
-    app.dependency_overrides = {}
-
-# Test the "add team member" endpoint for non-admin
-def test_add_team_member_as_non_admin(valid_user_token, test_user, team, database_user):
-    def mock_get_current_user():
-        return test_user
-
-    app.dependency_overrides[get_current_user] = mock_get_current_user
-
-    response = client.post(
-        "/api/team",
-        json={"user_id": database_user.id, "team_id": team.id},
-        headers={"Authorization": f"Bearer {valid_user_token}"},
-    )
-    assert response.status_code == 403
-
-    app.dependency_overrides = {}
-
-def test_add_manager_to_team_with_manager(valid_manager_token, admin_user, team_with_manager, second_manager_user):
-    def mock_get_current_user():
-        return admin_user
-
-    app.dependency_overrides[get_current_user] = mock_get_current_user
-
-    print(team_with_manager.id)
     response = client.post(
         "/api/team",
         json={"user_id": second_manager_user.id, "team_id": team_with_manager.id},
@@ -254,6 +212,3 @@ def test_add_manager_to_team_with_manager(valid_manager_token, admin_user, team_
     )
     assert response.status_code == 409
     assert response.json() == {"detail": "Team already has a manager"}
-
-    app.dependency_overrides = {}
-

@@ -70,9 +70,12 @@ def delete_team(db: Session, team_id: int, current_user: User):
     db.commit()
 
 def add_team_member(db: Session, user_id: int, team_id: int, current_user: User):
+
+    print(db)
     if current_user.role != "admin":
         raise PermissionError("You are not an admin")
     team = db.query(Team).filter(Team.id == team_id).first()
+    print(team)
     if team is None:
         raise ValueError("Team not found")
     user = db.query(User).filter(User.id == user_id).first()
@@ -100,7 +103,7 @@ def delete_team_member(db: Session, user_id: int, team_id: int, current_user: Us
     if user is None:
         raise ValueError("User not found")
     if user.team_id != team_id and user.role != "manager":
-        raise ValueError("User is not in the team")
+        raise ValueError("User is not in a team")
     if user.role == "manager":
         team.manager_id = None
 
@@ -114,7 +117,7 @@ def get_team_expenses(db: Session, current_user: User) -> dict:
     
     existing_team = db.query(Team).filter(Team.manager_id == current_user.id).first()
     if not existing_team:
-        raise ValueError("You are not a manager of any team")
+        raise ValueError("No team found for the manager")
 
     expenses = (
         db.query(

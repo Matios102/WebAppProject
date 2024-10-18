@@ -70,7 +70,7 @@ def change_user_role(db: Session, user_id: int, current_user: User):
 
 def delete_user(db: Session, user_id: int, current_user: User):
     if current_user.role != "admin":
-        raise PermissionError("You don't have permission to delete this user")
+        raise PermissionError("You are not an admin")
     
     user = db.query(User).filter(User.id == user_id).first()
     if not user:

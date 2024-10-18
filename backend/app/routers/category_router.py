@@ -2,6 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.schemas.category_schema import CategoryUpdate, CategoryCreate
 from app.utils.security import get_current_user
 from app.models import User
 import app.repositories.category_repository as repo
@@ -48,12 +49,12 @@ def get_categories(
 # Create a new category
 @router.post("/categories")
 def create_category(
-    category_name: str,
+    category: CategoryCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     try:
-        repo.create_category(db, category_name, current_user)
+        repo.create_category(db, category.category_name, current_user)
         return {"message": "Category created"}
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
@@ -69,13 +70,12 @@ def create_category(
 # Update an existing category
 @router.put("/categories/{category_id}")
 def update_category(
-    category_id: int,
-    category_name: str,
+    category: CategoryUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     try:
-        repo.update_category(db, category_id, category_name, current_user)
+        repo.update_category(db, category.category_id, category.category_name, current_user)
         return {"message": "Category updated"}
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))

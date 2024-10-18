@@ -40,21 +40,17 @@
                 })
             });
         
-            if (response.ok) {
-                popupMessage = 'Registration successful';
-                popupType = 'success';
-                goto('/login');
-            } else {
+            if (!response.ok) {
                 const errorData = await response.json();
-                popupMessage = errorData.detail || 'Registration failed';
-                popupType = 'error';
+                showNotification(errorData.detail, 'error');
+            } else {
+                const data = await response.json();
+                showNotification(data.message, 'success');
+                goto('/login');
             }
         } catch (error) {
-            console.error('Error occurred during registration:', error);
-            popupMessage = 'An error occurred. Please try again.';
-            popupType = 'error';
+            showNotification('Failed to register', 'error');
         }
-        showNotification(popupMessage, popupType);
     }
 </script>
 

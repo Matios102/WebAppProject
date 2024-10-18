@@ -40,9 +40,13 @@
     if (!valid) {
       errorMessage = error;
       if (error === "Your account is pending approval") {
+        showNotification("Your account is pending approval", "info");
         goto("/pending-approval");
+        return;
       } else {
+        showNotification("You do not have access to this page", "error");
           goto("/login");
+          return;
         }
     }
 
@@ -51,17 +55,14 @@
     }
 
     if (!hasAccess) {
-      errorMessage = "You do not have access to this page.";
+      showNotification("You do not have access to this page", "error");
       goto("/login");
+      return;
   
     } else {
-      isValid = true;
       await fetchUsers();
     }
 
-    if (!isValid) {
-      showNotification(errorMessage, "error");
-    }
     isProccessing = false;
   });
 
@@ -99,18 +100,11 @@
 
       if (!response.ok) {
         const errorData = await response.json();
-        if (response.status === 403) {
-          showNotification("You do not have permission to approve this user", "error");
-          goto("/login");
-        } else {
-          errorMessage = errorData.detail || "Failed to fetch users";
-          showNotification(errorMessage, "error");
-        }
+        showNotification(errorData.detail, "error");
       } else {
         users = await response.json();
       }
     } catch (error) {
-      console.error("Error fetching users: ", error);
       showNotification("Failed to fetch users", "error");
     }
     isProccessing = false;
@@ -131,20 +125,14 @@
       );
       if (!response.ok) {
         const errorData = await response.json();
-        if (response.status === 403) {
-          showNotification("You do not have permission to approve this user", "error");
-        } else if (response.status === 404) {
-          showNotification("User not found", "error");
-        } else {
-          showNotification(errorData.detail || "Failed to approve user", "error");
-        }
+        showNotification(errorData.detail, "error");
       } else {
-        showNotification("User approved successfully", "success");
+        const data = await response.json();
+        showNotification(data.message, "success");
         await fetchUsers();
       }
 
     } catch (error) {
-      console.error("Error approving user: ", error);
       showNotification("Failed to approve user", "error");
     }
     isProccessing = false;
@@ -164,20 +152,14 @@
       );
       if (!response.ok) {
         const errorData = await response.json();
-        if (response.status === 403) {
-          showNotification("You do not have permission to approve this user", "error");
-        } else if (response.status === 404) {
-          showNotification("User not found", "error");
-        } else {
-          showNotification(errorData.detail || "Failed to approve user", "error");
-        }
+        showNotification(errorData.detail, "error");
       } else {
-        showNotification("User deleted successfully", "success");
+        const data = await response.json();
+        showNotification(data.message, "success");
         await fetchUsers();
       }
 
     } catch (error) {
-      console.error("Error deleting user: ", error);
       showNotification("Failed to delete user", "error");
     }
     isProccessing = false;
@@ -199,21 +181,13 @@
       );
       if (!response.ok) {
         const errorData = await response.json();
-        if (response.status === 403) {
-          showNotification("You do not have permission to change this user's role", "error");
-        } else if (response.status === 404) {
-          showNotification("User not found", "error");
-        } else if (response.status === 409) {
-          showNotification("User's team already has a manager", "error");
-        } else {
-          showNotification(errorData.detail || "Failed to change user's role", "error");
-        }
+        showNotification(errorData.detail, "error");
       } else {
-        showNotification("User role changed successfully", "success");
+        const data = await response.json();
+        showNotification(data.message, "success");
         await fetchUsers();
       }
     } catch (error) {
-      console.error("Error changing user's role: ", error);
       showNotification("Failed to change user's user", "error");
     }
     isProccessing = false;

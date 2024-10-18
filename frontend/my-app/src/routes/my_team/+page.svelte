@@ -8,8 +8,6 @@
     import saveAs from 'file-saver';
     import * as XLSX from 'xlsx';
 
-    let isValid = false;
-    let errorMessage = '';
     let hasAccess = false;
     let isProccessing = false;
     let userExpenses = [];
@@ -21,11 +19,14 @@
     const { isValid: valid, error } = await checkToken();
 
     if (!valid) {
-      errorMessage = error;
       if (error === "Your account is pending approval") {
+        showNotification("Your account is pending approval", "info");
         goto("/pending-approval");
+        return;
       } else {
+        showNotification("You do not have access to this page", "error");
           goto("/login");
+          return;
         }
     }
 
@@ -34,16 +35,11 @@
     }
 
     if (!hasAccess) {
-      errorMessage = "You do not have access to this page.";
+      showNotification("You do not have access to this page", "error");
       goto("/login");
   
     } else {
-      isValid = true;
       await fetchUserExpenses();
-    }
-
-    if (!isValid) {
-      showNotification(errorMessage, "error");
     }
     isProccessing = false;
   });

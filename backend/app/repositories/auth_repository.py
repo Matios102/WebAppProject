@@ -10,6 +10,10 @@ import string
 
 
 def create_user(db: Session, user: UserRegister):
+    existing_user = get_user_by_email(db, user.email)
+    if existing_user:
+        raise ValueError("Email already registered")
+    
     hashed_password = get_hashed_password(user.password)
     db_user = User(
         name=user.name,
@@ -25,11 +29,14 @@ def create_user(db: Session, user: UserRegister):
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[Token]:
     user = db.query(User).filter(User.email == email).first()
-    if user and verify_password(password, user.password_hash):
-        access_token = create_access_token(data={"sub": user.email})
-        role = user.role
-        return {"access_token": access_token, "role": role}
-    return None
+    if not user:
+        raise ValueError("User not found")
+    if not verify_password(password, user.password_hash):
+        raise ValueError("Incorrect password")
+    
+    access_token = create_access_token(data={"sub": user.email})
+    role = user.role
+    return {"access_token": access_token, "role": role}
 
 
 def refresh_token(db: Session, token: str) -> Optional[Token]:

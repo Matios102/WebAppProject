@@ -50,8 +50,6 @@ def create_category(db: Session, name: str, current_user: User):
 def delete_category(db: Session, category_id: int, current_user: User):
     if current_user.role != "admin":
         raise PermissionError("You are not an admin")
-    if category_id == 1:
-        raise ValueError("Cannot delete default category")
     category = (
         db.query(Category)
         .filter(Category.id == category_id)
@@ -59,6 +57,8 @@ def delete_category(db: Session, category_id: int, current_user: User):
     )
     if category is None:
         raise ValueError("Category not found")
+    if category.name == "default":
+        raise ValueError("Cannot delete default category")
 
     expenses_with_deleted_category = (
         db.query(Expense).filter(Expense.category_id == category_id).all()

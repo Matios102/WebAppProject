@@ -80,7 +80,7 @@ def delete_team(
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred")
 
-
+ 
 # For Admin add a new team member
 @router.post("/team")
 def add_team_member(
@@ -88,13 +88,14 @@ def add_team_member(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    print(userTeam)
     try:
         repo.add_team_member(db, userTeam.user_id, userTeam.team_id, current_user)
         return {"message": "User added to the team"}
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
     except ValueError as e:
-        if "not found" in str(e):
+        if "Team not found" in str(e):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except Exception as e:

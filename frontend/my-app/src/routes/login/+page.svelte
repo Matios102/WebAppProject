@@ -43,8 +43,7 @@
                 const data = await response.json();
                 localStorage.setItem('authToken', data.access_token);
                 localStorage.setItem('userRole', data.role);
-                popupMessage = 'Login successful';
-                popupType = 'success';
+                showNotification(data.message, 'success');
                 if(data.role === 'admin') {
                     goto('/users');
                 } else {
@@ -52,16 +51,11 @@
                 }
             } else {
                 const errorData = await response.json();
-                popupMessage = errorData.detail || 'Invalid credentials';
-                popupType = 'error';
+                showNotification(errorData.detail, 'error');
             }
         } catch (error) {
-            console.error('Error occurred during login:', error);
-            popupMessage = 'An error occurred. Please try again.';
-            popupType = 'error';
+            showNotification('Failed to login', 'error');
         }
-        
-        showNotification(popupMessage, popupType);
     }
 
     onMount(async () => {

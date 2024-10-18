@@ -108,13 +108,15 @@
     if (categoryName.trim()) {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/categories?category_name=${encodeURIComponent(categoryName)}`,
+          `http://localhost:8000/api/categories`,
           {
             method: "POST",
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              "Content-Type": "application/json",
             },
+            body: JSON.stringify({ category_name: categoryName }),
           },
         );
 
@@ -186,21 +188,19 @@
   }
 
   async function updateCategory(categoryName) {
-    console.log(categoryName.trim());
-    console.log(selectedCategory);
     isProccessing = true;
     if (categoryName.trim()) {
       try {
-        console.log(selectedCategory);
-        let query = `category_name=${encodeURIComponent(categoryName)}`;
         const response = await fetch(
-          `http://localhost:8000/api/categories/${selectedCategory.id}?${query}`,
+          `http://localhost:8000/api/categories/${selectedCategory.id}`,
           {
             method: "PUT",
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              "Content-Type": "application/json",
             },
+            body: JSON.stringify({ category_name: categoryName, category_id: selectedCategory.id }),
           },
         );
 

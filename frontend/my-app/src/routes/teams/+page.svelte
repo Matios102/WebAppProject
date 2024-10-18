@@ -36,25 +36,24 @@
         if (!valid) {
             errorMessage = error;
             if (error === 'Your account is pending approval') {
+                showNotification('Your account is pending approval', 'info');
                 goto('/pending-approval');
+                return;
             } else {
+                showNotification('You do not have access to this page.', 'error');
                 goto('/login');
+                return;
             }
         } 
         if(valid) {
             hasAccess = await checkRole(expectedRoles);
         }
         if (!hasAccess) {
-            errorMessage = 'You do not have access to this page.';
-            goto('/login')
-
-        } else {
-            isValid = true;
+            showNotification('You do not have access to this page.', 'error');
+            goto('/login');
+            return;
         }
 
-        if(!isValid) {
-            showNotification(errorMessage, 'error');
-        }
         await fetchTeams();
         isProcessing = false;
     });
@@ -74,19 +73,11 @@
 
             if (!response.ok) {
                 errorData = await response.json();
-                if(errorData.status === 403) {
-                    errorMessage = "You do not have access to this page.";
-                    showNotification(errorMessage, 'error');
-                    goto('/login');
-                } else {
-                    errorMessage = errorData.detail || "Failed to fetch teams";
-                    showNotification(errorMessage, 'error');
-                }
+                showNotification(errorData.detail, 'error');
             } else {
                 teams = await response.json();
             }
         } catch (error) {
-            console.error("Error fetching teams", error);
             showNotification("Failed to fetch teams", 'error');
         }
         isProcessing = false;
@@ -107,20 +98,13 @@
             );
             if (!response.ok) {
                 const errorData = await response.json();
-                if (response.status === 403) {
-                    showNotification("You do not have permission to delete this user", "error");
-                    goto("/login");
-                } else if (response.status === 404) {
-                    showNotification("User not found", "error");
-                } else {
-                    showNotification(errorData.detail || "Failed to delete user", "error");
-                }
+                showNotification(errorData.detail, "error");
             } else {
-                showNotification("User deleted successfully", "success");
+                const data = await response.json();
+                showNotification(data.message, "success");
                 await fetchTeams();
             }
         } catch (error) {
-            console.error("Error deleting user", error);
             showNotification("Failed to delete user", "error");
         }
         isProcessing = false;
@@ -143,22 +127,13 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                if (response.status === 403) {
-                    showNotification("You do not have permission to add this user", "error");
-                    goto("/login");
-                } else if (response.status === 404) {
-                    showNotification("User not found", "error");
-                } else if (response.status === 409) {
-                    showNotification(errorData.detail, "error");
-                } else {
-                    showNotification(errorData.detail || "Failed to add user", "error");
-                }
+                showNotification(errorData.detail, "error");
             } else {
-                showNotification("User added successfully", "success");
+                const data = await response.json();
+                showNotification(data.message, "success");
                 await fetchTeams();
             }
         } catch (error) {
-            console.error("Error adding user", error);
             showNotification("Failed to add user", "error");
         }
         isProcessing = false;
@@ -182,22 +157,16 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                if (response.status === 403) {
-                    showNotification("You do not have permission to delete this team", "error");
-                    goto("/login");
-                } else if (response.status === 404) {
-                    showNotification("Team not found", "error");
-                } else {
-                    showNotification(errorData.detail || "Failed to delete team", "error");
-                }
+                showNotification(errorData.detail, "error");
             } else {
-                showNotification("Team deleted successfully", "success");
+                const data = await response.json();
+                showNotification(data.message, "success");
                 await fetchTeams();
             }
         } catch (error) {
-            console.error("Error deleting team", error);
             showNotification("Failed to delete team", "error");
         }
+        isProcessing = false;
     }
 
     async function addTeam(teamName) {
@@ -220,20 +189,13 @@
 
             if (!response.ok) {
                 errorData = await response.json();
-                if(response.status === 403) {
-                    errorMessage = "You do not have access to this page.";
-                    showNotification(errorMessage, 'error');
-                    goto('/login');
-                } else {
-                    errorMessage = errorData.detail || "Failed to add team";
-                    showNotification(errorMessage, 'error');
-                }
+                showNotification(errorData.detail, 'error');
             } else {
-                showNotification("Team added successfully", 'success');
+                const data = await response.json();
+                showNotification(data.message, 'success');
                 await fetchTeams();
             }
         } catch (error) {
-            console.error("Error adding team", error);
             showNotification("Failed to add team", 'error');
         }
         isProcessing = false;

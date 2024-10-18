@@ -1,24 +1,35 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text
 from app.main import app
 from app.models import Team, User
 from app.utils.jwt_handler import create_access_token
+from app.core.config import settings
 
 client = TestClient(app)
 
 
-@pytest.fixture
-def db_session(mocker):
-    session = MagicMock()
-    mocker.patch("app.database.get_db", return_value=session)
+@pytest.fixture(scope="function")
+def db_session():
+    engine = create_engine(settings.TEST_DATABASE_URL)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
+    session.execute(text("TRUNCATE TABLE expenses RESTART IDENTITY CASCADE"))
+    session.execute(text("TRUNCATE TABLE categories RESTART IDENTITY CASCADE"))
+    session.execute(text("TRUNCATE TABLE teams RESTART IDENTITY CASCADE"))
+    session.commit()
+
     yield session
+    session.rollback()
+    session.close()
 
 
 @pytest.fixture
 def admin_user(db_session):
     admin = User(
-        id=1,
         name="admin",
         surname="admin",
         email="admin@example.com",
@@ -26,36 +37,29 @@ def admin_user(db_session):
         password_hash="password123",
         is_approved=True,
     )
-    db_session.query.return_value.filter_by.return_value.first.return_value = admin
-    return admin
+    db_session.add(admin)
+    db_session.commit()
+    yield admin
 
 
 @pytest.fixture
 def test_user(db_session):
     user = User(
-        id=2,
         name="user",
         surname="user",
-        email="test@example.com",
+        email="test+1@example.com",
         role="user",
         password_hash="password123",
         is_approved=False,
     )
-    db_session.query.return_value.filter_by.return_value.first.return_value = user
-    return user
-
-
-@pytest.fixture
-def team_with_manager_and_user(db_session, admin_user):
-    team = Team(id=1, name="Test Team", manager_id=admin_user.id)
-    db_session.query.return_value.filter_by.return_value.first.return_value = team
-    return team
+    db_session.add(user)
+    db_session.commit()
+    yield user
 
 
 @pytest.fixture
 def user_with_team(db_session, team_with_manager_and_user):
     user = User(
-        id=3,
         name="user",
         surname="user",
         email="user_team@example.com",
@@ -64,8 +68,45 @@ def user_with_team(db_session, team_with_manager_and_user):
         is_approved=True,
         team_id=team_with_manager_and_user.id,
     )
-    db_session.query.return_value.filter_by.return_value.first.return_value = user
-    return user
+    db_session.add(user)
+    db_session.commit()
+    yield user
+
+
+@pytest.fixture
+def team_with_manager_and_user(db_session, admin_user):
+    team = Team(
+        name="Test Team",
+        manager_id=admin_user.id,
+    )
+    db_session.add(team)
+    db_session.commit()
+
+    user = User(
+        name="team_user",
+        surname="user",
+        email="team_user@example.com",
+        role="user",
+        password_hash="password123",
+        is_approved=True,
+    )
+    db_session.add(user)
+    db_session.commit()
+
+    user.team_id = team.id
+    db_session.commit()
+
+    yield team
+
+
+@pytest.fixture
+def valid_token(admin_user):
+    return create_access_token({"sub": admin_user.email})
+
+
+@pytest.fixture
+def current_user(db_session, admin_user):
+    return admin_user
 
 
 @pytest.fixture
@@ -175,6 +216,7 @@ def test_change_user_role_permission_error(
 
     assert response.status_code == 403
     assert response.json() == {"detail": "You are not an admin"}
+
 
 def test_change_user_role_in_a_team_with_manager(
     db_session, mocker, current_user, user_with_team, valid_token

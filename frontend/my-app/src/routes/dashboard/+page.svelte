@@ -29,27 +29,26 @@
         if (!valid) {
             errorMessage = error;
             if (error === 'Your account is pending approval') {
+                showNotification('Your account is pending approval', 'info');
                 goto('/pending-approval');
+                return;
             } else {
                 goto('/login');
+                return;
             }
         } 
         if(valid) {
             hasAccess = await checkRole(expectedRoles);
         }
         if (!hasAccess) {
-            errorMessage = 'You do not have access to this page.';
+            showNotification('You do not have access to this page', 'error');
             goto('/login')
+            return;
 
         } else {
-            isValid = true;
             await fetchTotalSpendings();
             await fetchYearlySpendings();
             await fetchCategorySpendings();
-        }
-
-        if(!isValid) {
-            showNotification(errorMessage, 'error');
         }
         isProcessing = false;
     });

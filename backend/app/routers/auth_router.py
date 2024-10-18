@@ -12,11 +12,13 @@ router = APIRouter()
 # Register a new user
 @router.post("/register")
 def register(user: UserRegister, db: Session = Depends(get_db)):
-    existing_user = get_user_by_email(db, user.email)
-    if existing_user:
-        raise HTTPException(status_code=409, detail="Email already registered")
-    repo.create_user(db, user)
-    return {"message": "User created successfully"}
+        try:
+            repo.create_user(db, user)
+            return {"message": "User created successfully"}
+        except ValueError as e:
+            raise HTTPException(status_code=409, detail=str(e))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 # Login and get an access token
@@ -24,10 +26,15 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
-    user_data = repo.authenticate_user(db, form_data.username, form_data.password)
-    if not user_data:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"access_token": user_data["access_token"], "role": user_data["role"] ,"token_type": "bearer"}
+    try:
+        user_data = repo.authenticate_user(db, form_data.username, form_data.password)
+        return {"access_token": user_data["access_token"], "role": user_data["role"] ,"token_type": "bearer"}
+    except ValueError as e:
+        if str(e) == "User not found":
+            raise HTTPException(status_code=404, detail="User not found")
+        elif str(e) == "Incorrect password":
+            raise HTTPException(status_code=401, detail="Incorrect password")
+    
 
 # Reset password
 @router.post("/reset-password")
