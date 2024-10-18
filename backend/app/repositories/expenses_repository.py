@@ -90,8 +90,11 @@ def create_expense(db: Session, expense: ExpenseCreate, current_user: User):
     if current_user.is_approved == False:
         raise PermissionError("User is not approved yet")
     
+    if(expense.amount < 0):
+        raise ValueError("Amount cannot be negative")
+    
     if not expense.category_id:
-        expense.category_id = 1 # default category
+        expense.category_id = 1
 
     category_id = (
         db.query(Category.id).filter(Category.id == expense.category_id).scalar()
@@ -119,6 +122,10 @@ def update_expense(
 
     if current_user.is_approved == False:
         raise PermissionError("User is not approved yet")
+    
+    if(expense_update.amount < 0):
+        raise ValueError("Amount cannot be negative")
+    
     db_expense = (
         db.query(Expense)
         .filter(Expense.id == expense_id, Expense.user_id == current_user.id)
@@ -174,11 +181,9 @@ def delete_expense(db: Session, expense_id: int, current_user: User):
 
 def get_total_spendings(db: Session, current_user: User) -> dict:
     if current_user.role == "admin":
-        print(current_user.role)
         raise PermissionError("Admins cannot have expenses")
     
     if not current_user.is_approved:
-        print(current_user.is_approved)
         raise PermissionError("User is not approved yet")
 
     # Sum of expenses for the last 7 days (week)

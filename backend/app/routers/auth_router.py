@@ -22,19 +22,19 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
 
 
 # Login and get an access token
-@router.post("/token", response_model=Token)
+@router.post("/token")
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     try:
         user_data = repo.authenticate_user(db, form_data.username, form_data.password)
-        return {"access_token": user_data["access_token"], "role": user_data["role"] ,"token_type": "bearer"}
+        return {"access_token": user_data["access_token"], "role": user_data["role"] ,"token_type": "bearer", "message": "Login successful"} 
     except ValueError as e:
         if str(e) == "User not found":
             raise HTTPException(status_code=404, detail="User not found")
         elif str(e) == "Incorrect password":
             raise HTTPException(status_code=401, detail="Incorrect password")
-    
+
 
 # Reset password
 @router.post("/reset-password")

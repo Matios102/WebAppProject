@@ -140,14 +140,12 @@ def test_update_category_as_user(valid_approved_user_token, category1):
 # Test deleting a category as admin
 def test_delete_category(valid_approved_admin_token, category1):
     response = client.delete(f"/api/categories/{category1.id}", headers={"Authorization": f"Bearer {valid_approved_admin_token}"})
-    print(response.json())
     assert response.status_code == 200
     assert response.json()["message"] == "Category deleted"
 
 # Test deleting a category as user (should fail)
 def test_delete_category_as_user(valid_approved_user_token, category1):
     response = client.delete(f"/api/categories/{category1.id}", headers={"Authorization": f"Bearer {valid_approved_user_token}"})
-    print(response.json())
     assert response.status_code == 403
     assert response.json()["detail"] == "You are not an admin"
 

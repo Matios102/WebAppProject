@@ -15,30 +15,40 @@
         await fetchCategories();
     });
 
-    async function fetchCategories () {
+    async function fetchCategories() {
         try {
-            const response = await fetch('http://localhost:8000/api/categories', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                }
-            });
+            const response = await fetch(
+                "http://localhost:8000/api/categories",
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+                    },
+                },
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
                 if (response.status === 403) {
-                    showNotification('You do not have permission to fetch categories', 'error');
-                    goto('/login');
+                    showNotification(
+                        "You do not have permission to fetch categories",
+                        "error",
+                    );
+                    goto("/login");
                 } else {
-                    showNotification(errorData.detail || 'An error occurred. Please try again.', 'error');
+                    showNotification(
+                        errorData.detail ||
+                            "An error occurred. Please try again.",
+                        "error",
+                    );
                 }
             } else {
                 allCategories = await response.json();
             }
         } catch (error) {
-            console.error('Error occurred while fetching categories:', error);
-            showNotification('Failed to fetch categories.', 'error');
+            console.error("Error occurred while fetching categories:", error);
+            showNotification("Failed to fetch categories.", "error");
         }
     }
 
@@ -52,9 +62,21 @@
     <div class="popup">
         <h2>Add Expense</h2>
         <form on:submit|preventDefault={addExpense}>
-            <input type="text" bind:value={expenseName} placeholder="Expense Name" required/>
-            <input type="number" bind:value={amount} placeholder="Amount" required/>
-            <input type="date" bind:value={date} placeholder="Date" required/>
+            <input
+                type="text"
+                bind:value={expenseName}
+                placeholder="Expense Name"
+                required
+            />
+            <input
+                type="number"
+                bind:value={amount}
+                placeholder="Amount"
+                min="0"
+                step="0.01"
+                required
+            />
+            <input type="date" bind:value={date} placeholder="Date" required />
             <select bind:value={category}>
                 <option value="">Select Category</option>
                 {#each allCategories as category}
@@ -63,7 +85,9 @@
             </select>
             <div class="actions">
                 <button type="submit" class="button green-btn">Add</button>
-                <button class="button cancel-btn" on:click={onClose}>Cancel</button>
+                <button class="button cancel-btn" on:click={onClose}
+                    >Cancel</button
+                >
             </div>
         </form>
     </div>

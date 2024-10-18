@@ -25,7 +25,7 @@ class Team(Base):
     )
 
 
-class Expense(Base):
+class Expense(Base): 
     __tablename__ = "expenses"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

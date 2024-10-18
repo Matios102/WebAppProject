@@ -3,7 +3,7 @@
   import { goto } from "$app/navigation";
   import { showNotification } from "$lib/stores/popupStore.js";
   import { checkToken, checkRole } from "$lib/utils/auth.js";
-  import { SlidersHorizontal, Trash, X } from "lucide-svelte";
+  import { ListFilter, Trash, X } from "lucide-svelte";
   import GeneralDeleteWidnowPopup from "$lib/components/Popups/WindowPopups/GeneralDeleteWidnowPopup.svelte";
   import ApproveWindowPopup from "$lib/components/Popups/WindowPopups/User/ApproveWindowPopup.svelte";
   import EditWindowPopup from "$lib/components/Popups/WindowPopups/User/EditWindowPopup.svelte";
@@ -32,7 +32,6 @@
   let selectedUser = null;
   let filters = {};
 
-
   onMount(async () => {
     isProccessing = true;
     const { isValid: valid, error } = await checkToken();
@@ -45,9 +44,9 @@
         return;
       } else {
         showNotification("You do not have access to this page", "error");
-          goto("/login");
-          return;
-        }
+        goto("/login");
+        return;
+      }
     }
 
     if (valid) {
@@ -58,7 +57,6 @@
       showNotification("You do not have access to this page", "error");
       goto("/login");
       return;
-  
     } else {
       await fetchUsers();
     }
@@ -131,7 +129,6 @@
         showNotification(data.message, "success");
         await fetchUsers();
       }
-
     } catch (error) {
       showNotification("Failed to approve user", "error");
     }
@@ -158,13 +155,11 @@
         showNotification(data.message, "success");
         await fetchUsers();
       }
-
     } catch (error) {
       showNotification("Failed to delete user", "error");
     }
     isProccessing = false;
   }
-
 
   async function changeUserRole() {
     isProccessing = true;
@@ -202,21 +197,15 @@
     isDeletionMode = !isDeletionMode;
   }
 
-
   function toggleWidnowPopup(user, popup) {
     selectedUser = user;
 
-    if(popup === "")
-      showWindowPopup = false;
-    else
-      showWindowPopup = true;
+    if (popup === "") showWindowPopup = false;
+    else showWindowPopup = true;
 
     currentPopup = popup;
   }
-
-  
 </script>
-
 
 {#if showWindowPopup}
   {#if currentPopup == UserFilterPanel}
@@ -228,30 +217,38 @@
   {:else if currentPopup == "delete"}
     <GeneralDeleteWidnowPopup
       header="Delete this user?"
-      label="User" 
+      label="User"
       data="{selectedUser.name} {selectedUser.surname}"
       onDelete={deleteUser}
       onClose={() => toggleWidnowPopup(null, "")}
     />
   {:else if currentPopup == "approve"}
-    <ApproveWindowPopup user={selectedUser} onClose={toggleWidnowPopup} onApprove={approveUser} />
-
+    <ApproveWindowPopup
+      user={selectedUser}
+      onClose={toggleWidnowPopup}
+      onApprove={approveUser}
+    />
   {:else if currentPopup == "edit"}
-    <EditWindowPopup user={selectedUser} onClose={toggleWidnowPopup} changeUserRole={changeUserRole} />
+    <EditWindowPopup
+      user={selectedUser}
+      onClose={toggleWidnowPopup}
+      {changeUserRole}
+    />
   {:else if currentPopup == "filter"}
     <UserFilterPanel
       applyFilter={fetchUsers}
       toggleFilterMenu={() => toggleWidnowPopup(null, "")}
-      filters={filters}
+      {filters}
     />
-    {/if}
+  {/if}
 {/if}
 
-
- 
 <div class="action-button-container">
-  <button class="action-button" on:click={() => toggleWidnowPopup(null, "filter")}>
-    <SlidersHorizontal />
+  <button
+    class="action-button"
+    on:click={() => toggleWidnowPopup(null, "filter")}
+  >
+    <ListFilter />
   </button>
   <button class="action-button" on:click={toggleDeletionMode}>
     {#if isDeletionMode}
@@ -270,7 +267,11 @@
   <div class="center-container">
     <div class="card-container">
       {#each users as user}
-        <UserCard user={user} isDeletionMode={isDeletionMode} toggleWindowPopup={toggleWidnowPopup} />
+        <UserCard
+          {user}
+          {isDeletionMode}
+          toggleWindowPopup={toggleWidnowPopup}
+        />
       {/each}
     </div>
   </div>

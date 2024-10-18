@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { showNotification } from "$lib/stores/popupStore.js";
 
     export let onEdit;
     export let onClose;
@@ -11,7 +12,7 @@
     let newCategory = expense.category_name;
     let allCategories = [];
 
-    onMount(async () => { 
+    onMount(async () => {
         await fetchCategories();
     });
 
@@ -24,7 +25,9 @@
         ) {
             onClose();
         }
-        let categoryId = allCategories.find((category) => category.name === newCategory);
+        let categoryId = allCategories.find(
+            (category) => category.name === newCategory,
+        );
         onEdit(newExpenseName, newAmount, newDate, categoryId.id);
         onClose();
     }
@@ -43,12 +46,17 @@
             );
 
             if (!response.ok) {
-                console.log(response);
+                const errorData = await response.json();
+                showNotification(
+                    errorData.detail,
+                    "error",
+                );
+            } else {
+                allCategories = await response.json();
             }
 
-            allCategories = await response.json();
         } catch (error) {
-            console.error("Error occurred while fetching categories:", error);
+            showNotification("Failed to fetch categories.", "error");
         }
     }
 </script>
@@ -68,20 +76,19 @@
                 bind:value={newAmount}
                 placeholder={expense.amount}
                 required
+                min="0.01"
             />
             <input type="date" bind:value={newDate} required />
             <select bind:value={newCategory}>
-                <option value={expense.category_name} selected>{expense.category_name}</option>
+                <option value={expense.category_name} selected
+                    >{expense.category_name}</option
+                >
                 {#each allCategories.filter((category) => category.name !== expense.category_name) as category}
                     <option value={category.name}>{category.name}</option>
                 {/each}
             </select>
             <div class="actions">
-                <button
-                    type="submit"
-                    class="button green-btn"
-                    >Edit</button
-                >
+                <button type="submit" class="button green-btn">Edit</button>
                 <button class="button cancel-btn" on:click={onClose}
                     >Cancel</button
                 >

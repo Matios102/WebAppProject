@@ -8,7 +8,7 @@
     import EditWindowPopup from "$lib/components/Popups/WindowPopups/Expense/EditWindowPopup.svelte";
     import GeneralDeleteWindowPopup from "$lib/components/Popups/WindowPopups/GeneralDeleteWidnowPopup.svelte";
     import ExpenseFilterPanel from "$lib/components/FilterPanels/ExpenseFilterPanel.svelte";
-    import { SlidersHorizontal, Trash, X, Plus } from "lucide-svelte";
+    import { ListFilter, Trash, X, Plus } from "lucide-svelte";
 
     let isValid = false;
     let errorMessage = "";
@@ -32,7 +32,10 @@
                 goto("/pending-approval");
                 return;
             } else {
-                showNotification("You do not have access to this page", "error");
+                showNotification(
+                    "You do not have access to this page",
+                    "error",
+                );
                 goto("/login");
                 return;
             }
@@ -83,13 +86,13 @@
                     if (errorData.detail === "Admins cannot have expenses") {
                         errorMessage =
                             "Admins cannot have expenses. Please contact support for more information.";
-                            goto("/login");
+                        goto("/login");
                     } else if (
                         errorData.detail === "User is not approved yet"
                     ) {
                         errorMessage =
                             "Your account has not been approved yet. Please wait for approval.";
-                            goto("/pending-approval");
+                        goto("/pending-approval");
                     } else {
                         errorMessage = "You do not have access to this page.";
                         goto("/login");
@@ -117,7 +120,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    'Authorization': `Bearer ${localStorage.getItem("authToken")}`,
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
                 },
                 body: JSON.stringify({
                     name: expenseName,
@@ -128,28 +131,7 @@
             });
             if (!response.ok) {
                 const errorData = await response.json();
-                if (response.status === 403) {
-                    if (errorData.detail === "Admins cannot have expenses") {
-                        errorMessage =
-                            "Admins cannot have expenses. Please contact support for more information.";
-                            goto("/login");
-                    } else if (
-                        errorData.detail === "User is not approved yet"
-                    ) {
-                        errorMessage =
-                            "Your account has not been approved yet. Please wait for approval.";
-                            goto("/pending-approval");
-                    } else {
-                        errorMessage = "You do not have access to this page.";
-                        goto("/login");
-                    }
-                    showNotification(errorMessage, "error");
-                } else if (response.status === 404) {
-                    showNotification("Category not found", "error");
-                } else {
-                    errorMessage = errorData.detail || "Failed to add expense";
-                    showNotification(errorMessage, "error");
-                }
+                showNotification(errorData.detail, "error");
             } else {
                 showNotification("Expense added successfully", "success");
                 await fetchExpenses();
@@ -180,13 +162,13 @@
                     if (errorData.detail === "Admins cannot have expenses") {
                         errorMessage =
                             "Admins cannot have expenses. Please contact support for more information.";
-                            goto("/login");
+                        goto("/login");
                     } else if (
                         errorData.detail === "User is not approved yet"
                     ) {
                         errorMessage =
                             "Your account has not been approved yet. Please wait for approval.";
-                            goto("/pending-approval");
+                        goto("/pending-approval");
                     } else {
                         errorMessage = "You do not have access to this page.";
                         goto("/login");
@@ -195,7 +177,8 @@
                 } else if (response.status === 404) {
                     showNotification("Expense not found", "error");
                 } else {
-                    errorMessage = errorData.detail || "Failed to delete expense";
+                    errorMessage =
+                        errorData.detail || "Failed to delete expense";
                     showNotification(errorMessage, "error");
                 }
             } else {
@@ -210,7 +193,6 @@
     }
 
     async function editExpense(name, amount, date, category) {
-        console.log("in editExpense", selectedExpense);
         isProccessing = true;
         try {
             const response = await fetch(
@@ -236,13 +218,13 @@
                     if (errorData.detail === "Admins cannot have expenses") {
                         errorMessage =
                             "Admins cannot have expenses. Please contact support for more information.";
-                            goto("/login");
+                        goto("/login");
                     } else if (
                         errorData.detail === "User is not approved yet"
                     ) {
                         errorMessage =
                             "Your account has not been approved yet. Please wait for approval.";
-                            goto("/pending-approval");
+                        goto("/pending-approval");
                     } else {
                         errorMessage = "You do not have access to this page.";
                         goto("/login");
@@ -282,7 +264,7 @@
         class="action-button"
         on:click={() => toggleWindowPopup(null, "filter")}
     >
-        <SlidersHorizontal />
+        <ListFilter />
     </button>
     <button
         class="action-button"

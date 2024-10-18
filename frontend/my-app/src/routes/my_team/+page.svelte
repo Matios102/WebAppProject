@@ -60,21 +60,16 @@
                 const errorData = await response.json();
 
                 if(response.status === 404){
-                    showNotification("No team asigned", 'error');
-                } else if (errorData.status === 403) {
-                    showNotification("You do not have access to this page", 'error');
-                    goto('/login');
+                    showNotification("No team asigned", 'info');
                 } else {
                     showNotification(errorData.message, 'error');
                 }
             } else {
                 const data = await response.json();
                 userExpenses = Object.values(data);
-                console.log(userExpenses);
             }
 
         } catch (error) {
-            console.error("Error fetching team expenses", error);
             showNotification("Failed to fetch team", 'error');
         }
     }
@@ -119,6 +114,6 @@
         </div>
       </div>
     {:else}
-        <p>No expenses found</p>
+        <p>No users found</p>
     {/if}
 {/if}

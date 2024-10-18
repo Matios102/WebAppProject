@@ -71,11 +71,9 @@ def delete_team(db: Session, team_id: int, current_user: User):
 
 def add_team_member(db: Session, user_id: int, team_id: int, current_user: User):
 
-    print(db)
     if current_user.role != "admin":
         raise PermissionError("You are not an admin")
     team = db.query(Team).filter(Team.id == team_id).first()
-    print(team)
     if team is None:
         raise ValueError("Team not found")
     user = db.query(User).filter(User.id == user_id).first()

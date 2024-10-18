@@ -146,8 +146,6 @@
                 const data = await response.json();
                 radarData.labels = Object.keys(data);
                 radarData.datasets[0].data = Object.values(data);
-
-                console.log(radarData);
             }
 
         } catch (error) {
@@ -253,14 +251,15 @@
 </div>
 
 <div class="center-container">
-    <div class="card">
-      <Line data={lineData} options={lineOptions} style="width: 100%"/>
-    </div>
-    <div class="card">
-        <Radar data={radarData} style="width: 100%"/>
-      </div>
+      <Line data={lineData} options={lineOptions} style="width: 50%"/>
 </div>
-<div class="center-container">
+<div class="center-container radar-chart">
+  <Radar data={radarData} style="width: 100%"/>
+</div>
 
-</div>
+<style>
+  .radar-chart {
+    width: 50%;
+  }
+</style>
 {/if}

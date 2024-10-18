@@ -9,7 +9,6 @@
     transition: transform 0.3s ease;
     padding: 1.5rem;
     z-index: 1000;
-    font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -22,16 +21,16 @@
     border: none;
     font-size: 2rem;
     cursor: pointer;
-    color: #d32f2f;
+    color: #E74C3C;
     transition: color 0.3s;
 }
 
 .close-btn:hover {
-    color: #9d2f2f;
+    color: #95361F;
 }
 
 .filter-panel h2 {
-    color: #d32f2f;
+    color: #E74C3C;
     font-size: 1.5rem;
     margin-bottom: 1rem;
     font-weight: bold;
@@ -63,7 +62,7 @@ select {
 .filter-panel input[type="email"]:focus,
 input[type="number"]:focus,
 input[type="date"]:focus {
-    border-color: #d32f2f;
+    border-color: #E74C3C;
     outline: none;
 }
 
@@ -105,13 +104,13 @@ input[type="date"]:focus {
 }
 
 .filter-btn {
-    background-color: #d32f2f;
+    background-color: #E74C3C;
     color: white;
     border: none;
 }
 
 .filter-btn:hover {
-    background-color: #9d2f2f;
+    background-color: #95361F;
     box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
 }
 

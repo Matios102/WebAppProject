@@ -39,7 +39,7 @@
     .header {
         display: flex;
         justify-content: center;
-        background-color: #d32f2f;
+        background-color:#E74C3C;
         padding: 1rem;
         width: 100%;
         box-sizing: border-box;
@@ -73,16 +73,15 @@
     }
 
     .tab:hover {
-        color: #9d2f2f;
+        color: #95361F;
     }
 
     .tab:active {
         transform: scale(0.95);
     }
 
-    /* Button for toggling the menu on small screens */
     .menu-toggle {
-        background-color: #d32f2f;
+        background-color: #E74C3C;
         color: white;
         font-size: 1.5rem;
         border: none;
@@ -93,25 +92,22 @@
         display: none;
     }
 
-    /* Display the menu-toggle button on small screens */
     @media (max-width: 768px) {
         .menu-toggle {
             display: block;
         }
 
-        /* When the menu is collapsed, the header should be 57px high */
         .header {
             height: 57px;
             transition: height 0.3s ease;
         }
 
-        /* When the menu is expanded, increase the header height */
         .header.expanded {
             height: auto;
         }
 
         .tab-container {
-            display: none; /* Hide tabs initially */
+            display: none;
             flex-direction: column;
             align-items: center;
             width: 100%;
@@ -123,7 +119,6 @@
             text-align: center;
         }
 
-        /* When the menu is expanded, show the tabs */
         .tab-container.show {
             display: flex;
         }
@@ -133,7 +128,6 @@
 
 {#if userRole === 'admin' || userRole === 'manager' || userRole === 'user'}
     <div class="header {isMenuCollapsed ? '' : 'expanded'}">
-        <!-- Button for toggling the menu on small screens -->
         <button class="menu-toggle" on:click={toggleMenu}>
             {#if isMenuCollapsed}
                 <AlignJustify />

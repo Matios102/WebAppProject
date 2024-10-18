@@ -92,7 +92,7 @@
 .action-button-container {
     position: fixed;
     top: 70px;
-    right: 5px;
+    right: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -102,7 +102,7 @@
 }
 
 .action-button-container .action-button {
-    background-color: #d32f2f;
+    background-color: #E74C3C;
     border: none;
     border-radius: 50%;
     width: 50px;
@@ -118,7 +118,7 @@
 }
 
 .action-button-container .action-button:hover {
-    background-color: #9d2f2f;
+    background-color: #95361F;
 }
 
 
@@ -175,4 +175,5 @@
     background-color: #45a049;
     box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
 }
+
 

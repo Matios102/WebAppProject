@@ -7,7 +7,7 @@
   import CategoryFilterPanel from "$lib/components/FilterPanels/CategoryFilterPanel.svelte";
   import AddWindowPopup from "$lib/components/Popups/WindowPopups/Category/AddWindowPopup.svelte";
   import EditWindowPopup from "$lib/components/Popups/WindowPopups/Category/EditWindowPopup.svelte";
-  import { SlidersHorizontal, Trash, X, Plus } from "lucide-svelte";
+  import { ListFilter, Trash, X, Plus } from "lucide-svelte";
   import GeneralDeleteWidnowPopup from "../../lib/components/Popups/WindowPopups/GeneralDeleteWidnowPopup.svelte";
 
   //Data displayed
@@ -107,18 +107,15 @@
     isProccessing = true;
     if (categoryName.trim()) {
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/categories`,
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ category_name: categoryName }),
+        const response = await fetch(`http://localhost:8000/api/categories`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({ category_name: categoryName }),
+        });
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -200,7 +197,10 @@
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ category_name: categoryName, category_id: selectedCategory.id }),
+            body: JSON.stringify({
+              category_name: categoryName,
+              category_id: selectedCategory.id,
+            }),
           },
         );
 
@@ -252,7 +252,7 @@
     class="action-button"
     on:click={() => toggleWindowPopup(null, "filter")}
   >
-    <SlidersHorizontal />
+    <ListFilter />
   </button>
   <button
     class="action-button"

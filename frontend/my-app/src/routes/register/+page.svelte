@@ -54,9 +54,8 @@
     }
 </script>
 
-  
-  <style>
-    .container {
+<style>
+      .container {
       max-width: 400px;
       margin: 100px auto;
       padding: 2rem;
@@ -67,28 +66,29 @@
   
     h1 {
       text-align: center;
-      color: #d32f2f;
+      color: #E74C3C;
     }
   
     label {
       font-weight: bold;
-      color: #d32f2f;
+      color: #E74C3C;
       display: block;
       margin-bottom: 0.5rem;
     }
   
     input {
       width: 100%;
+      box-sizing: border-box;
       padding: 0.5rem;
       margin-bottom: 1rem;
-      border: 1px solid #d32f2f;
+      border: 1px solid #E74C3C;
       border-radius: 5px;
     }
   
     button {
       width: 100%;
       padding: 0.75rem;
-      background-color: #d32f2f;
+      background-color: #E74C3C;
       color: white;
       border: none;
       border-radius: 5px;
@@ -97,8 +97,9 @@
     }
   
     button:hover {
-      background-color: #b71c1c;
+      background-color: #95361F;
     }
+  
   
     p {
       text-align: center;
@@ -106,14 +107,15 @@
     }
   
     a {
-      color: #d32f2f;
+      color: #E74C3C;
       text-decoration: none;
     }
   
     a:hover {
       text-decoration: underline;
     }
-  </style>
+</style>
+
   
   <div class="container">
     <h1>Register</h1>

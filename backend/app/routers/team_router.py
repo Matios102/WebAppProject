@@ -88,7 +88,6 @@ def add_team_member(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    print(userTeam)
     try:
         repo.add_team_member(db, userTeam.user_id, userTeam.team_id, current_user)
         return {"message": "User added to the team"}
