@@ -13,7 +13,7 @@ client = TestClient(app)
 
 @pytest.fixture(scope="function")
 def db_session():
-    engine = create_engine(settings.TEST_DATABASE_URL)
+    engine = create_engine("postgresql://postgres:password@localhost:5432/dough")
     Session = sessionmaker(bind=engine)
     session = Session()
     

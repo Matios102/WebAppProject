@@ -6,13 +6,12 @@ from app.main import app
 from app.repositories.auth_repository import create_user
 from app.schemas.user_schema import UserRegister
 from app.models import User
-from app.core.config import settings
 
 client = TestClient(app)
 
 @pytest.fixture(scope="function")
 def db_session():
-    engine = create_engine(settings.TEST_DATABASE_URL)
+    engine = create_engine("postgresql://postgres:password@localhost:5432/dough")
     Session = sessionmaker(bind=engine)
     session = Session()
     
@@ -81,12 +80,12 @@ def test_login_success(db_session, test_user):
     assert "role" in json_data
     assert json_data["token_type"] == "bearer"
 
-def test_login_invalid_credentials(db_session):
+def test_login_invalid_credentials(db_session, test_user):
     response = client.post(
-        "/token", data={"username": "invalid@example.com", "password": "wrong_password"}
+        "/token", data={"username": test_user.email, "password": "wrong_password"}
     )
     assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid credentials"}
+    assert response.json() == {"detail": "Incorrect password"}
 
 def test_check_token_success(db_session, mocker):
     mocker.patch(
