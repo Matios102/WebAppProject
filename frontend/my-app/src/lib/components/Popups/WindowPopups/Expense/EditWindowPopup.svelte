@@ -76,7 +76,8 @@
                 bind:value={newAmount}
                 placeholder={expense.amount}
                 required
-                min="0.01"
+                min="0"
+                step="0.01"
             />
             <input type="date" bind:value={newDate} required />
             <select bind:value={newCategory}>

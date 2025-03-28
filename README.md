@@ -1,94 +1,150 @@
-Track That Dough - Expense Tracking Web App
+# Track That Dough - Expense Tracking Web App
 
-Overview
+## Overview
 
-Track That Dough is a web application designed to help users track their expenses and view statistics about their spending. The app supports three user roles: User, Manager, and Admin, each with different permissions.
+**Track That Dough** is a comprehensive expense tracking web application designed to help users manage their personal and team finances effectively. The app provides a user-friendly interface and robust features tailored to three distinct user roles: **User**, **Manager**, and **Admin**. Each role comes with specific permissions and functionalities to ensure a seamless experience.
 
-  Users can create, edit, and delete their own expenses.
-	Managers can do everything a User can, plus they can view an overview of team members and generate reports (Excel) for their team’s spending.
-	Admins manage users, teams, and categories, and can promote/demote users between User and Manager roles.
+### Key Features
 
-User Roles and Login Information (for testing):
+#### User
+- **Dashboard**: Displays an overview of personal expenses with statistics on total, yearly, monthly, and weekly spending.
+- **Visualizations**:
+  - **Line Graph**: Tracks monthly spending trends over time.
+  - **Radar Graph**: Shows the distribution of expenses by category.
+- **Expense Management**:
+  - Create, edit, and delete personal expenses (name, amount, date, and category).
 
-  Admin: a@a.aaa, password: a  
-	Manager: m@m.mmm, password: m  
-	User: u@u.uuu, password: u  
+#### Manager
+- **Team Overview**: View a list of team members and their total spending.
+- **Reports**: Generate and download Excel reports summarizing team expenses.
 
-Features
+#### Admin
+- **User Management**:
+  - Approve new user registrations.
+  - Promote or demote users between **User** and **Manager** roles.
+  - Delete users.
+- **Team Management**:
+  - Create, edit, and delete teams.
+  - Assign managers to teams (each team can have only one manager).
+- **Category Management**:
+  - Create, edit, and delete expense categories (category names must be unique).
 
-User
+---
 
-  Dashboard: Displays an overview of your expenses with statistics on total, yearly, monthly, and weekly spending.
-  Line Graph: Monthly spendings over time.
-  Radar Graph: Distribution of expenses by category.
-  Expenses: A list of your personal expenses where you can:
-  Create a new expense (name, amount, date, and category).
-  Edit or delete an existing expense.
+## Screenshots
 
-Manager
+### Dashboard
+![Dashboard](/screenshots/user_dashboard.png)
 
-  Team Overview: View a list of users assigned to your team, along with their total spendings.
-	Reports: Download an Excel report of your team’s spending.
+### Expense Management
+![Expenses](/screenshots/user_expenses.png)
+![Add Expense](/screenshots/user_add_expense.png)
 
-Admin
+### Team Overview (Manager Role)
+![Team Overview](/screenshots/manager_my_team.png)
 
-  Users Page: View all users, with actions to:
-	Approve new users.
-	Promote/demote users between User and Manager roles.
-	Delete users.
-	Teams Page: Manage teams (each team can have only one manager), with the ability to:
-	Create, edit, or delete teams.
-	Assign managers to teams.
-	Categories Page: Manage categories (which are fixed for all users), including:
-	Create, edit, or delete categories (category names must be unique).
+### Admin Panel
+![User Management](/screenshots/admin_users.png)
+![Team Management](/screenshots/admin_teams.png)
+![Category Management](/screenshots/admin_categories.png)
+
+---
 
 ## Installation and Setup
 
-Requirements
+### Requirements
+- **Docker**
+- **Make**
 
-  Docker  
-	Make
+### Steps to Install and Run the Application
 
-1. Install and Run the App
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Matios102/WebAppProject
+   cd WebAppProject
+   ```
 
-In the root directory of the project, run the following commands to build and start the application using Docker:
+2. Build and start the application using Docker:
+   ```bash
+   docker-compose up --build
+   ```
 
-docker-compose up --build
+3. Access the application in your browser at `http://localhost:3000`.
 
-2. Run Unit Tests
+### Running Unit Tests
 
 To run the unit tests, use the following command:
-
+```bash
 make unit-test
+```
 
-3. Testing the App
+---
+
+## Usage Flow
+
+### 1. Registering New Users
+- New users can register through the app.
+- Admins must approve new registrations before users can log in and start using the app.
+
+### 2. Expense Management (User Role)
+- Users can manage their expenses by adding, editing, or deleting entries.
+- Each expense includes:
+  - **Name**: A short description of the expense.
+  - **Amount**: The cost of the expense.
+  - **Date**: The date the expense was incurred.
+  - **Category**: A predefined category assigned by the Admin.
+
+### 3. Team Management (Manager Role)
+- Managers can view their team’s expenses and download detailed reports in Excel format.
+
+### 4. Administration (Admin Role)
+Admins are responsible for:
+- Approving new users.
+- Managing teams and assigning managers.
+- Creating and managing categories.
+
+---
+
+## Testing the App
 
 You can log in as different roles using the following credentials:
 
-  Admin: a@a.aaa, password: a
-	Manager: m@m.mmm, password: m
-	User: u@u.uuu, password: u
+- **Admin**: `admin@admin.com`, password: `admin`
+- **Manager**: `manager@manager.com`, password: `manager`
+- **User**: `user@user.com`, password: `user`
 
-These accounts already have some sample data preloaded for testing.
+These accounts come preloaded with sample data for testing purposes.
 
-Usage Flow
+---
 
-1. Registering New Users
+## Project Structure
 
-When a new user registers, they will need to be approved by an Admin before they can log in and start using the app.
+```
+.
+├── backend/
+│   ├── Dockerfile.backend
+│   ├── requirements.txt
+│   ├── wait-for-it.sh
+│   └── app/
+│       ├── __init__.py
+│       ├── database.py
+│       ├── main.py
+│       ├── models.py
+│       ├── core/
+│       ├── repositories/
+│       ├── routers/
+│       ├── schemas/
+│       └── utils/
+├── frontend/
+├── tests/
+│   ├── test_auth.py
+│   ├── test_category.py
+│   ├── test_expense.py
+│   ├── test_team.py
+│   └── test_user.py
+├── docker-compose.yml
+├── Makefile
+└── README.md
+```
 
-2. Expense Management
-
-Users can create, edit, and delete expenses from the Expenses page. Expenses consist of a name, amount, date, and category. Categories are predefined by the Admin and are available to all users.
-
-3. Team Management (Manager Role)
-
-Managers can view their assigned team’s expenses and download reports in Excel format from the Team Page.
-
-4. Administration (Admin Role)
-
-Admins are responsible for:
-
-  Approving new users
-	Managing teams and categories
-	Promoting and demoting users between User and Manager roles
+---

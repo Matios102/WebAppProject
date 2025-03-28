@@ -3,17 +3,14 @@ from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base, get_db
 from app.routers import expenses_router, auth_router, user_router, team_router, category_router
-from app.utils.init import user_dump, initial_users, category_dump, team_dump
+from app.utils.init import full_dump
 
 app = FastAPI()
 if engine is not None:
     Base.metadata.create_all(bind=engine)
 
 db = next(get_db())
-category_dump(db)
-initial_users(db)
-user_dump(db)
-team_dump(db)
+full_dump(db)
 
 
 origins = [
